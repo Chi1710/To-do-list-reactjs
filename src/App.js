@@ -12,10 +12,7 @@ function App() {
 
   //Tasks (toDo list) state
   //status: false (it mean isn't completed)
-  const[toDo, setToDo] = useState([
-      {id: 1, title:"Task one", status: false},
-      {id: 2, title:"Task two", status: false}
-  ]);
+  const[toDo, setToDo] = useState([]);
 
   //Temp state
   const [newTask, setNewTask] = useState('');
@@ -98,6 +95,7 @@ function App() {
               className='btn btn-lg btn-success mr-20'> 
               Update</button>
               <button
+              onClick={cancelUpdate}
               className='btn btn-lg btn-warning'>
                 Cancel </button>
           </div>
