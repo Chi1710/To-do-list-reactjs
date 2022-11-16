@@ -3,7 +3,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import {
-  faCircleCheck, faPen, faTrashCan
+  faCircleCheck, faPen, faTasksAlt, faTrashCan
 } from '@fortawesome/free-solid-svg-icons'
 
 import './App.css';
@@ -29,36 +29,48 @@ function App() {
       setToDo([...toDo, newEntry ])
       setNewTask('');
     }
-
   }
 
   //Delete task
   const deleteTask = (id) => {
-
-
+    let newTasks = toDo.filter ( task => task.id !== id)
+    setToDo(newTasks);
   }
 
   //mark task as completed
-  const markDoneTask = (id) => {
-
-
+  const markDone = (id) => {
+    let newTask = toDo.map( task => {
+      if(task.id === id){
+        return ({ ...task, status: !task.status})
+      }
+      return task;
+    })
+    setToDo(newTask);
   }
 
   //Cancel update
   const cancelUpdate = () => {
-
+    setUpdateData('');
 
   }
 
   //change task for update
-  const changeTask = (event) => {
-
+  const changeTask = (e) => {
+    let newEntry = {
+      id: updateData.id,
+      title: e.target.value,
+      status: updateData.status ? true : false
+    }
+    setUpdateData(newEntry);
 
   }
 
   //update task
   const updateTask = () => {
-
+    let filterRecords = [...toDo].filter(task => task.id !== updateData.id);
+    let updatedObject = [...filterRecords, updateData];
+    setToDo(updatedObject);
+    setUpdateData('');
   }
 
 
@@ -69,12 +81,59 @@ function App() {
         <h2>To Do List App (ReactJS)</h2>
         <br></br>
 
+        {updateData && updateData ? (
+            //Update Task
+          <>
+          <div className='row'>
+            <div className='col'>
+              <input
+                value={ updateData && updateData.title}
+                onChange = { (e) => changeTask(e)}
+                className="form-control form-control-lg"
+                />
+            </div>
+            <div className='col-auto'>
+              <button 
+              onClick={updateTask}
+              className='btn btn-lg btn-success mr-20'> 
+              Update</button>
+              <button
+              className='btn btn-lg btn-warning'>
+                Cancel </button>
+          </div>
+          </div>
+          <br />
+          </>
+          ): ( //Add Task
+           <>
+              <div className='row'>
+                <div className='col'>
+                  <input
+                  value={newTask}
+                  onChange = { (e) => setNewTask(e.target.value)}
+                  className = 'form-control form-control-lg'
+                  />
+                  </div>
+                <div className='col-auto'>
+                  <button
+                  onClick={addTask}
+                  className="btn btn-lg btn-success">
+                    Add Task
+                  </button>
+                </div>
+              </div>
+              <br />
+              </>
+          )}
+
+        
+
        {/* display ToDos */}
       {toDo && toDo.length ? '' : 'No Task...'}
 
       {toDo && toDo
       
-        // .sort((a,b) => a.id >b.id ? 1 : -1)
+        .sort((a,b) => a.id >b.id ? 1 : -1)
         // the order of tasks will always start from the smallest id to larger 
         .map((task, index) => {
           return(
@@ -87,62 +146,41 @@ function App() {
             </ div>
 
             <div className="iconsWrap">
-              <span title="Completed / Not Completed">
+              <span 
+              title="Completed / Not Completed"
+              onClick={ (e) => markDone(task.id) }>
                 <FontAwesomeIcon icon={faCircleCheck} />
               </span>
-              <span title="Edit">
+
+              {task.status ? null : ( 
+              <span 
+              title="Edit"
+              onClick={ () => setUpdateData({
+                id: task.id,
+                title: task.title,
+                status: task.status ? true : false 
+              })}>
               <FontAwesomeIcon icon={faPen} />
               </span>
-              <span title="Delete">
+              )}
+
+              <span 
+              title="Delete"
+              onClick={() => deleteTask(task.id)}>
               <FontAwesomeIcon icon={faTrashCan} />
               </span>           
-            </div>
-
-
-                      
+            </div>                      
             </div>
             </React.Fragment>
 
           )
         })
       }
-            {/* Update Task*/}
-            <div className='row'>
-              <div className='col'>
-                <input className='form-control form-control-lg'/>
-              </div>
-              <div className='col-auto'>
-                <button className='btn btn-lg btn-success mr-20'>
-                  Update
-                </button >
-                <button className='btn btn-lg btn-warning'>
-                  Cancel
-                  </button>
-              </div>              
-            </div>
-            <br />
-
-
-            {/* Add Task*/}
-            <div className='row'>
-              <div className='col'>
-                <input 
-                value={newTask}
-                onChange={ (e) => setNewTask(e.target.value)}
-                className='form-control form-control-lg'/>
-              </div>
-              <div className='col-auto'>
-                <button
-                onClick = {addTask} 
-                className='btn btn-lg btn-success'>
-                  Add Task
-                </button>
-              </div>              
-            </div>
-
-
+      
+      
     </div>
-  );
+  )
 }
+
 
 export default App;
